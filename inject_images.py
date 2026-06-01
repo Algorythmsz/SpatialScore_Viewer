@@ -196,16 +196,18 @@ THUMB_CSS = """
   }
   .thumbstrip img{
     width:100%;
-    aspect-ratio:1/1;
-    object-fit:cover;
-    background:#ddd;
+    aspect-ratio:auto;
+    object-fit:contain;
+    background:var(--paper-2);
     display:block;
     border:1px solid rgba(0,0,0,0.08);
   }
   .thumbstrip[data-n="1"]{grid-template-columns:1fr;}
-  .thumbstrip[data-n="1"] img{aspect-ratio:4/3;}
+  .thumbstrip[data-n="1"] img{aspect-ratio:auto;}
   .thumbstrip[data-n="2"]{grid-template-columns:1fr 1fr;}
-  .thumbstrip[data-n="2"] img{aspect-ratio:4/3;}
+  .thumbstrip[data-n="2"] img{aspect-ratio:auto;}
+  .thumbstrip[data-n="4"]{grid-template-columns:repeat(4,1fr);}
+  .thumbstrip[data-n="4"] img{aspect-ratio:auto;}
   .thumb-note{
     font-family:var(--mono);
     font-size:9px;
