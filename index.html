@@ -2214,5 +2214,22 @@ Question: {question}</div>
   </div>
 </footer>
 
+<script>
+  // Remove accidental consecutive duplicate blocks inside each sample card.
+  document.querySelectorAll(".stcard").forEach((card) => {
+    const seen = new Set();
+    Array.from(card.children).forEach((child) => {
+      const cls = child.className || "";
+      if (!/(^| )(thumbstrip|thumb-note|st-sources)( |$)/.test(cls)) return;
+      const key = cls + "::" + child.innerHTML.trim();
+      if (seen.has(key)) {
+        child.remove();
+      } else {
+        seen.add(key);
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
