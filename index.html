@@ -535,7 +535,7 @@ Question: {question}</div>
           <span class="t src">SITE-Bench / SpatialEval</span>
         </div>
         <div class="st-q">Is the exit (E) to the top right of the starting point (S)?</div>
-        <div class="st-extra">A maze figure with black walls, white passages, a green start cell S, a red exit E, and a blue solution path. Despite the elaborate Maze-Navigation framing in the boilerplate, this particular sub-task variant just asks about the relative cardinal position of E w.r.t. S — i.e. whether the model can locate two coloured cells and compare their grid coordinates. Boilerplate stripped for legibility.</div>
+        <div class="st-extra">A maze figure with black walls, white passages, a green start cell S, a red exit E, and a blue solution path. Despite the elaborate Maze-Navigation framing in the boilerplate, this particular sub-task variant just asks about the relative position of E w.r.t. S — here an intercardinal direction (top-right) — so the model only needs to locate two coloured cells and compare their grid coordinates, not trace the path. Boilerplate stripped for legibility.</div>
         <ul class="st-opts">
           <li class="gt"><span class="ltr">(A)</span><span class="otxt">Yes</span></li>
           <li><span class="ltr">(B)</span><span class="otxt">No.</span></li>
@@ -613,7 +613,7 @@ Question: {question}</div>
           <span class="t src">SpatialEval</span>
         </div>
         <div class="st-q">How many objects are in the East of Yacht Club?</div>
-        <div class="st-extra">A synthetic 2D map shows several named objects (Yacht Club, etc.) laid out on a grid. The model must (i) locate the anchor object and (ii) count how many other named objects lie strictly in the queried cardinal direction. Here the answer is 0 — nothing sits to the east of Yacht Club. Boilerplate prefix ("The figure represents a map with multiple objects...") stripped for legibility.</div>
+        <div class="st-extra">A synthetic 2D map shows several named objects (Yacht Club, etc.) placed at random points. Every sample fills two slots — a direction and an anchor object — into the template "How many objects are in the [direction] of [anchor]?". SpatialEval discretises the pairwise angle between objects into eight compass wedges (N, NE, E, SE, S, SW, W, NW), but the generator never places two objects on the same row or column. As a result, ALL pairwise relations land in the four diagonal wedges (NE / NW / SE / SW), and any counting question with a cardinal direction (E / W / N / S) is answered 0 by construction — confirmed across all 32 such samples in the benchmark. So even though objects clearly sit to the right of Yacht Club in the picture, those are NE or SE relative to it, not E. The intended answer is 0 regardless of the visible layout.</div>
         <ul class="st-opts">
           <li><span class="ltr">(A)</span><span class="otxt">5</span></li>
           <li><span class="ltr">(B)</span><span class="otxt">4</span></li>
@@ -677,7 +677,7 @@ Question: {question}</div>
           <span class="t src">SITE-Bench / IconQA</span>
         </div>
         <div class="st-q">How many shapes are green?</div>
-        <div class="st-extra">"With Relation" = count only the objects that satisfy a queried predicate. Here the predicate is a colour attribute (green); other variants ask about shape kind, position, or spatial relations between shapes.</div>
+        <div class="st-extra">"With Relation" = count only the objects that match a property named in the question, instead of counting everything. Here the property is a colour (green); other variants in this sub-task ask about shape kind, position, or how shapes relate to each other in 2D.</div>
         <ul class="st-opts">
           <li class="gt"><span class="ltr">(A)</span><span class="otxt">5</span></li>
           <li><span class="ltr">(B)</span><span class="otxt">3</span></li>
@@ -821,27 +821,32 @@ Question: {question}</div>
       <article class="stcard mc">
         <div class="st-head">
           <div class="st-subtask">Relative Distance</div>
-          <div class="st-id">id 2344</div>
+          <div class="st-id">id 2416</div>
         </div>
-        <div class="thumbstrip" data-n="1">
-          <img src="extracted_samples/SITE-Bench/data/SEED-Bench/hf/cc3m-image/2592032_1883159950" alt="frame 0" loading="lazy">
+        <div class="thumbstrip" data-n="4">
+          <img src="extracted_samples/SITE-Bench/32_frames/VSI-Bench/arkitscenes/42899461/frame_00.jpg" alt="frame 0" loading="lazy">
+          <img src="extracted_samples/SITE-Bench/32_frames/VSI-Bench/arkitscenes/42899461/frame_10.jpg" alt="frame 10" loading="lazy">
+          <img src="extracted_samples/SITE-Bench/32_frames/VSI-Bench/arkitscenes/42899461/frame_21.jpg" alt="frame 21" loading="lazy">
+          <img src="extracted_samples/SITE-Bench/32_frames/VSI-Bench/arkitscenes/42899461/frame_31.jpg" alt="frame 31" loading="lazy">
         </div>
+        <div class="thumb-note">showing 4 of 32 sampled frames</div>
 
         <div class="st-tags">
           <span class="t qm">multi-choice</span>
-          <span class="t mod">single-image</span>
+          <span class="t mod">video · 32 frames</span>
           <span class="t task">3D Perception (Relative)</span>
-          <span class="t src">SITE-Bench / SeedBench</span>
+          <span class="t src">SITE-Bench / VSI-Bench (ARKitScenes)</span>
         </div>
-        <div class="st-q">Which object is the farthest from the man?</div>
+        <div class="st-q">Measuring from the closest point of each object, which of these objects (table, fireplace, sofa, tv) is the closest to the stove?</div>
+        <div class="st-extra">A clean Relative Distance example: all four options are real named objects in the scanned room, and the question explicitly defines distance as the surface-to-surface minimum between two objects (i.e. closest-point, not centroid). The model needs to localise five objects across a 32-frame ARKitScenes walkthrough and rank pairwise distances. (Replaces a SeedBench-style sample where three of the four options were fabricated distractors that may not appear in the image, an outlier among the 263 Relative Distance records.)</div>
         <ul class="st-opts">
-          <li><span class="ltr">(A)</span><span class="otxt">A black and silver tennis racket</span></li>
-          <li><span class="ltr">(B)</span><span class="otxt">A tree with no leaves in the background</span></li>
-          <li><span class="ltr">(C)</span><span class="otxt">A green canoe floating on the water</span></li>
-          <li class="gt"><span class="ltr">(D)</span><span class="otxt">A metal oar resting on the boat</span></li>
+          <li class="gt"><span class="ltr">(A)</span><span class="otxt">table</span></li>
+          <li><span class="ltr">(B)</span><span class="otxt">fireplace</span></li>
+          <li><span class="ltr">(C)</span><span class="otxt">sofa</span></li>
+          <li><span class="ltr">(D)</span><span class="otxt">tv</span></li>
         </ul>
-        <div class="st-ans"><span class="lbl">answer</span><span class="val">D</span></div>
-        <div class="st-path"><span class="lbl">img</span>./SITE-Bench/data/SEED-Bench/hf/cc3m-image/2592032_1883159950</div>
+        <div class="st-ans"><span class="lbl">answer</span><span class="val">A</span></div>
+        <div class="st-path"><span class="lbl">video</span>./SITE-Bench/data/VSI-Bench/arkitscenes/42899461.mp4 (32 sampled frames)</div>
       </article>
 
     </div>
@@ -995,7 +1000,7 @@ Question: {question}</div>
           <li><span class="ltr">(D)</span><span class="otxt">Point D</span></li>
         </ul>
         <div class="st-ans"><span class="lbl">answer</span><span class="val">C</span></div>
-        <div class="st-path"><span class="lbl">img</span>./SITE-Bench/data/MMIU/visual_correspondence_blink/visual_correspondence_blink_90_0.jpg</div>
+        <div class="st-path"><span class="lbl">img1</span>./SITE-Bench/data/MMIU/visual_correspondence_blink/visual_correspondence_blink_90_0.jpg<br><span class="lbl">img2</span>./SITE-Bench/data/MMIU/visual_correspondence_blink/visual_correspondence_blink_90_1.jpg</div>
       </article>
 
       <article class="stcard mc">
@@ -1176,7 +1181,7 @@ Question: {question}</div>
         </ul>
         <div class="st-ans"><span class="lbl">answer</span><span class="val">(D)</span></div>
         <div class="st-extra">Each option is a 3×3 homography (9 floats) — truncated here, see ndjson for full precision.</div>
-        <div class="st-path"><span class="lbl">img</span>./repurposed_data/external/Omni3D/datasets/objectron/train/laptop_batch_38_8_0000100.jpg</div>
+        <div class="st-path"><span class="lbl">orig</span>./repurposed_data/external/Omni3D/datasets/objectron/train/laptop_batch_38_8_0000100.jpg<br><span class="lbl">xformed</span>./repurposed_data/homography/69236_1762721705269322_transformed.jpg</div>
       </article>
 
     </div>
