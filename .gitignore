@@ -1,29 +1,3 @@
-# Downloaded image archive and extracted images (several GB)
-spatialscore_images/
+# Downloaded image archive (not needed after extraction)
+spatialscore_images/SpatialScore_benchmark.zip
 extracted_samples_2/
-
-# Dataset symlinks created by connect_images.sh (absolute paths, machine-specific)
-3DSRBench
-BLINK
-CV-Bench
-MIRAGE
-MMIU-Benchmark
-MMSI-Bench
-MMVP
-OmniSpatial
-Q-Spatial-Bench
-RoboSpatial-Home
-SITE-Bench
-SPAR-Bench
-STI-Bench
-SpaCE-10
-Spatial-Visualization
-SpatialBench
-SpatialEval
-SpatialSense
-VLM4D
-VSI-Bench
-realworldqa
-repurposed_data
-srbench
-vsr_zeroshot

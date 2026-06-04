@@ -122,6 +122,9 @@
   .io-col.input .field-mono{background:var(--paper-2);border-left-color:var(--in-cl);}
   .field-mono.small{font-size:10.5px;}
   .field-mono.empty{color:var(--muted);font-style:italic;background:transparent;border-left-style:dashed;}
+  .field-suffix{font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--muted);
+                background:var(--paper-2);padding:8px 10px;border-left:2px solid var(--in-cl);
+                white-space:pre-wrap;word-break:break-word;}
 
   /* Navigation */
   .nav-row{display:flex;align-items:center;justify-content:space-between;padding:16px 40px 6px;gap:14px;}
@@ -196,6 +199,8 @@
           <div class="field-mono" id="fieldFinalPrompt"></div>
           <div class="field-label">extra_info (auxiliary info: bbox coords, etc.) <span class="marker raw">raw</span></div>
           <div class="field-mono" id="fieldExtraInfo"></div>
+          <div class="field-label">system suffix (assistant_prompt) <span class="marker" style="border-color:var(--muted);">from test_qwen.py</span></div>
+          <div class="field-suffix" id="fieldSuffix"></div>
         </div>
         <div class="io-col output">
           <span class="io-label">Output</span>
@@ -360,6 +365,33 @@ function render() {
     $('fieldExtraInfo').textContent = JSON.stringify(ei, null, 2);
     $('fieldExtraInfo').classList.remove('empty');
   }
+
+  // System suffix (assistant_prompt) — 4 variants from test_qwen.py
+  const PROMPTS = {
+    'multi-choice':
+      "**Please select the most appropriate answer from the given options.**\n" +
+      "**Respond ONLY with the capital letter and its parentheses.**\n\nQuestion: ",
+    'judgement':
+      "**Please answer with yes or no based on the image.**\n" +
+      "**Respond ONLY with 'yes' or 'no'.**\n\nQuestion: ",
+    'open-ended-distance':
+      "Please answer the question by measuring the precise distance in 3D space through 2D images or videos.\n" +
+      "Respond ONLY with a numeric answer consisting of a scalar and a distance unit in the format of **\\scalar{scalar} \\distance_unit{distance unit}**.\n\nQuestion: ",
+    'open-ended-general':
+      "**Please answer the question based on the given image or video.**\n" +
+      "**Respond ONLY with a concise and accurate scalar or a scalar with corresponding unit.**\n\nQuestion: ",
+  };
+  const qt = (s.question_type || '').toLowerCase();
+  let promptKey;
+  if (qt === 'multi-choice') promptKey = 'multi-choice';
+  else if (qt === 'judgement') promptKey = 'judgement';
+  else if (qt === 'open-ended') {
+    const ei2 = ei || {};
+    promptKey = ('answer_value' in ei2 && 'answer_unit' in ei2) ? 'open-ended-distance' : 'open-ended-general';
+  } else {
+    promptKey = 'open-ended-general';
+  }
+  $('fieldSuffix').textContent = PROMPTS[promptKey];
 
   $('fieldAnswer').textContent = s.answer;
 
