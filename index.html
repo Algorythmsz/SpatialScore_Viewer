@@ -159,8 +159,33 @@
   footer .kbd{display:inline-block;padding:2px 6px;margin:0 2px;background:var(--paper-2);
               border:1px solid var(--rule);font-size:10px;color:var(--ink);font-weight:700;}
 
+  /* ── Gallery view ── */
+  .gallery{padding:4px 40px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+  .gcard{border:1px solid var(--rule);border-top:3px solid var(--cat-cl);position:relative;cursor:pointer;
+         transition:transform .08s,box-shadow .08s;background:var(--paper);}
+  .gcard:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12);}
+  .gimg{height:150px;background:#000;overflow:hidden;line-height:0;}
+  .gimg img{width:100%;height:100%;object-fit:cover;}
+  .gph{height:150px;display:flex;align-items:center;justify-content:center;
+       color:#a0998a;font-family:var(--mono);font-size:9px;
+       background:repeating-linear-gradient(45deg,#1a1a18,#1a1a18 8px,#222 8px,#222 16px);
+       padding:12px;text-align:center;line-height:1.4;}
+  .gbadge{position:absolute;top:6px;right:6px;font-family:var(--mono);font-size:9px;font-weight:700;
+          letter-spacing:0.06em;padding:2px 6px;background:var(--ink);color:var(--paper);z-index:3;}
+  .gmeta{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;
+         font-family:var(--mono);font-size:10px;border-top:1px solid var(--rule);background:var(--paper-2);}
+  .gmeta .gid{font-weight:600;color:var(--muted);font-size:9.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;}
+  .gmeta .gans{font-weight:700;color:var(--out-cl);flex-shrink:0;}
+  .gtitle{padding:7px 10px 0;font-family:var(--mono);font-size:9px;color:var(--muted);
+          letter-spacing:0.04em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;}
+  .view-btn{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+            padding:5px 10px;border:1px solid var(--rule);background:var(--paper-2);color:var(--muted);cursor:pointer;
+            transition:all .12s;flex-shrink:0;}
+  .view-btn:hover,.view-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
   @media (max-width: 900px){
     .masthead,.cat-bar,.subtask-bar,.stage,.nav-row,.dots,footer{padding-left:18px;padding-right:18px;}
+    .gallery{padding-left:18px;padding-right:18px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
     h1{font-size:28px;}
     .io-grid{grid-template-columns:1fr;}
     .io-col.input{border-right:none;border-bottom:1px solid var(--rule);}
@@ -181,6 +206,7 @@
   <main class="stage">
     <div class="stage-meta">
       <span class="ttl"><span class="cat-tag" id="catTag"></span><span id="subLabel">—</span></span>
+      <button class="view-btn" id="viewToggle">▦ gallery</button>
       <span class="idx" id="posInfo"></span>
     </div>
     <article class="card" id="card">
@@ -217,9 +243,10 @@
         <pre class="raw-json" id="rawJson"></pre>
       </div>
     </article>
+    <div class="gallery" id="galleryGrid" style="display:none;"></div>
   </main>
 
-  <div class="nav-row">
+  <div class="nav-row" id="navRow">
     <button class="nav-btn" id="prevBtn">← prev</button>
     <span class="nav-pos"><b id="posCur">1</b> / <span id="posTot">10</span></span>
     <button class="nav-btn" id="nextBtn">next →</button>
@@ -308,6 +335,8 @@ function render() {
   $('catTag').textContent = cat.category;
   $('subLabel').textContent = sub.sub_task;
   $('posInfo').textContent = `cat ${catIdx+1}/${DATA.length} · sub ${subIdx+1}/${cat.sub_tasks.length}`;
+
+  if (viewMode === 'gallery') { renderGallery(); return; }
 
   $('cardHead').innerHTML = `
     <span class="tag tag-id">#${s.id}</span>
@@ -412,6 +441,65 @@ function render() {
     dotsEl.appendChild(d);
   }
 }
+
+let viewMode = 'single';
+
+function renderGallery() {
+  const cat = DATA[catIdx];
+  const sub = cat.sub_tasks[subIdx];
+  const catColor = CAT_COLORS[cat.category] || '#c1421f';
+  const grid = $('galleryGrid');
+  grid.innerHTML = '';
+  sub.samples.forEach((s, idx) => {
+    const card = document.createElement('div');
+    card.className = 'gcard';
+    card.style.setProperty('--cat-cl', catColor);
+    const ipath = s.image_paths && s.image_paths.length ? s.image_paths[0] : null;
+    const gimg = document.createElement('div');
+    gimg.className = 'gimg';
+    if (ipath) {
+      const img = document.createElement('img');
+      img.alt = '';
+      img.loading = 'lazy';
+      img.src = ipath;
+      img.addEventListener('error', () => { gimg.innerHTML = `<div class="gph">${s.source_dataset}</div>`; });
+      gimg.appendChild(img);
+    } else {
+      gimg.innerHTML = `<div class="gph">${s.source_dataset}</div>`;
+    }
+    const badge = document.createElement('div');
+    badge.className = 'gbadge';
+    badge.textContent = s.input_modality === 'video' ? '▶ video' : '#' + s.id;
+    const title = document.createElement('div');
+    title.className = 'gtitle';
+    title.textContent = s.question.slice(0, 120);
+    const meta = document.createElement('div');
+    meta.className = 'gmeta';
+    meta.innerHTML = `<span class="gid">${s.source_dataset}</span><span class="gans">${s.answer || '—'}</span>`;
+    card.appendChild(gimg);
+    card.appendChild(badge);
+    card.appendChild(title);
+    card.appendChild(meta);
+    card.addEventListener('click', () => { sampIdx = idx; setView('single'); render(); });
+    grid.appendChild(card);
+  });
+}
+
+function setView(mode) {
+  viewMode = mode;
+  const isGallery = mode === 'gallery';
+  $('viewToggle').textContent = isGallery ? '▤ single' : '▦ gallery';
+  $('viewToggle').classList.toggle('active', isGallery);
+  $('card').style.display = isGallery ? 'none' : '';
+  $('galleryGrid').style.display = isGallery ? 'grid' : 'none';
+  $('navRow').style.display = isGallery ? 'none' : '';
+  $('dots').style.display = isGallery ? 'none' : '';
+}
+
+$('viewToggle').addEventListener('click', () => {
+  if (viewMode === 'single') { setView('gallery'); renderGallery(); }
+  else { setView('single'); render(); }
+});
 
 $('prevBtn').addEventListener('click', () => { if (sampIdx > 0) { sampIdx--; render(); } });
 $('nextBtn').addEventListener('click', () => { if (sampIdx < DATA[catIdx].sub_tasks[subIdx].samples.length - 1) { sampIdx++; render(); } });
